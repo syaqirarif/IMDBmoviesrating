@@ -1,0 +1,62 @@
+CREATE TABLE movies (
+    Poster_Link VARCHAR(255),
+    Series_Title VARCHAR(255),
+    Released_Year INT,
+    Certificate VARCHAR(10),
+    Runtime VARCHAR(50),
+    Genre VARCHAR(100),
+    IMDB_Rating DECIMAL(3, 1),
+    Overview TEXT,
+    Meta_score INT,
+    Director VARCHAR(255),
+    Star1 VARCHAR(100),
+    Star2 VARCHAR(100),
+    Star3 VARCHAR(100),
+    Star4 VARCHAR(100),
+    No_of_Votes INT,
+    Gross DECIMAL(20, 2)
+);
+
+SELECT Director, AVG(CAST(IMDB_Rating AS DECIMAL(3, 1))) AS Avg_Rating
+FROM movies
+GROUP BY Director
+ORDER BY Avg_Rating DESC;
+
+WITH Cast_Ratings AS (
+    SELECT Star1 AS Actor, AVG(CAST(IMDB_Rating AS DECIMAL(3, 1))) AS Avg_Rating
+    FROM movies
+    GROUP BY Star1
+    UNION ALL
+    SELECT Star2 AS Actor, AVG(CAST(IMDB_Rating AS DECIMAL(3, 1))) AS Avg_Rating
+    FROM movies
+    GROUP BY Star2
+    UNION ALL
+    SELECT Star3 AS Actor, AVG(CAST(IMDB_Rating AS DECIMAL(3, 1))) AS Avg_Rating
+    FROM movies
+    GROUP BY Star3
+    UNION ALL
+    SELECT Star4 AS Actor, AVG(CAST(IMDB_Rating AS DECIMAL(3, 1))) AS Avg_Rating
+    FROM movies
+    GROUP BY Star4
+)
+
+SELECT Actor, AVG(Avg_Rating) AS Avg_Rating
+FROM Cast_Ratings
+GROUP BY Actor
+ORDER BY Avg_Rating DESC;
+
+SELECT Series_Title, Director, CONCAT(Star1, ', ', Star2, ', ', Star3, ', ', Star4) AS Cast, Runtime, CAST(IMDB_Rating AS DECIMAL(3, 1)) AS Rating
+FROM movies
+WHERE CAST(IMDB_Rating AS DECIMAL(3, 1)) >= 7.0
+ORDER BY Rating DESC, Gross DESC;
+
+SELECT Series_Title, Director, CONCAT(Star1, ', ', Star2, ', ', Star3, ', ', Star4) AS Cast, Runtime, CAST(IMDB_Rating AS DECIMAL(3, 1)) AS Rating
+FROM movies
+WHERE CAST(IMDB_Rating AS DECIMAL(3, 1)) < 4.0
+ORDER BY Rating ASC, Gross ASC;
+
+SELECT Series_Title, Gross
+FROM movies
+ORDER BY CAST(Gross AS DECIMAL(20, 2)) DESC
+LIMIT 10;
+
